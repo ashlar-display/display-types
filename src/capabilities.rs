@@ -749,7 +749,7 @@ pub struct DisplayCapabilities {
     /// More precise than [`screen_size`][Self::screen_size] (which is in cm). `None` when
     /// the EDID has no preferred timing or that descriptor gives no size (either axis 0).
     /// It can be `Some` while `preferred_timing` is `None`: the descriptor gives a size but
-    /// its geometry does not decode. Other descriptors' sizes do not fill it, and neither
+    /// its geometry does not decode (which the decoder reports as a warning). Other descriptors' sizes do not fill it, and neither
     /// does DisplayID's image size (in `DisplayIdCapabilities::image_size`).
     pub preferred_image_size_mm: Option<(u16, u16)>,
     /// The preferred timing: the base block's first timing descriptor (non-zero pixel
@@ -760,7 +760,8 @@ pub struct DisplayCapabilities {
     /// [`DisplayFeatureFlags::PREFERRED_TIMING`][crate::features::DisplayFeatureFlags::PREFERRED_TIMING]
     /// is set in [`display_features`][Self::display_features]. `None` when the EDID has no
     /// preferred timing, the base block holds no timing descriptor, or the descriptor's
-    /// geometry does not decode. Extension blocks never fill it. With `alloc` the same mode
+    /// geometry does not decode; the decoder reports the last two as warnings. Extension
+    /// blocks never fill it. With `alloc` the same mode
     /// is also in `supported_modes`, where it may have taken over an established or
     /// standard timing's entry.
     ///
