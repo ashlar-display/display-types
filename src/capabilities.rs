@@ -767,9 +767,10 @@ pub struct DisplayCapabilities {
     ///
     /// Available in every build, unlike `supported_modes`.
     ///
-    /// Set only by the base block's decoder, together with
-    /// [`preferred_image_size_mm`][Self::preferred_image_size_mm]: a custom decoder that
-    /// replaces it sets both, and extension decoders leave both alone (a preferred flag in
+    /// Set by the base block's decoder, together with
+    /// [`preferred_image_size_mm`][Self::preferred_image_size_mm], replacing earlier values.
+    /// A step that corrects both (a quirk fix) runs after that decoder; a custom decoder that
+    /// replaces it sets both. Extension decoders leave both alone (a preferred flag in
     /// another block belongs in that block's own data).
     pub preferred_timing: Option<VideoMode>,
     /// Video timing formula reported in the display range limits descriptor.
