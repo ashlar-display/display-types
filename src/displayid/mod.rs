@@ -91,7 +91,7 @@ pub struct DisplayParamsV2 {
 
 /// Display technology family, decoded from byte 10 of DisplayID 2.x block 0x21.
 ///
-/// Unknown byte values are preserved via [`DisplayTechnology::Other`] so a spec-defined
+/// Unknown byte values are preserved via [`DisplayTechnology::Other`] so a
 /// future value (e.g. LCoS, microLED) does not make the containing block un-decodable.
 ///
 /// `Other` is `#[non_exhaustive]` and cannot be constructed outside this crate; use
@@ -275,7 +275,7 @@ bitflags::bitflags! {
 /// Constructed via [`CustomColorSpaceEotfCombo::new`].
 ///
 /// Each byte encodes one pair: bits 7:4 = color space index, bits 3:0 = EOTF index.
-/// Index values are defined by the DisplayID 2.x spec §4.6:
+/// Index values are defined by DisplayID 2.x §4.6:
 ///
 /// Color space: 0 = follow interface, 1 = sRGB, 2 = BT.601, 3 = BT.709,
 /// 4 = Adobe RGB, 5 = DCI-P3, 6 = BT.2020, 7 = custom.
@@ -355,8 +355,8 @@ pub struct DisplayInterfaceFeatures {
     /// flags whose semantics this crate does not yet typify.
     pub audio_flags: u8,
     /// Color space and EOTF defined-combinations bitmask (payload byte 6). Each set bit
-    /// indicates support for one of the spec's pre-defined `(color space, EOTF)` pairs.
-    /// Stored as a raw byte; bit positions match the spec §4.6 table (bit 0 = sRGB, etc.).
+    /// indicates support for one of DisplayID 2.x's pre-defined `(color space, EOTF)` pairs.
+    /// Stored as a raw byte; bit positions match the DisplayID 2.x §4.6 table (bit 0 = sRGB, etc.).
     pub color_space_eotf_combos: u8,
     /// Custom color space and EOTF combinations (payload bytes 9+, up to 7 entries).
     /// The count of valid entries is in [`DisplayInterfaceFeatures::custom_color_space_eotf_count`].
@@ -392,7 +392,7 @@ pub enum DualInterfaceMirroring {
     LeftRight,
     /// Image is mirrored across the horizontal axis (top/bottom swap).
     TopBottom,
-    /// Reserved by the DisplayID 2.x specification.
+    /// Reserved by DisplayID 2.x.
     Reserved,
 }
 
@@ -439,15 +439,15 @@ impl StereoTimingScopeV2 {
 
 /// Stereo viewing method advertised by a DisplayID 2.x Stereo Display Interface block (0x27).
 ///
-/// Each variant carries the method-specific parameters. Method codes that are reserved by the
-/// spec are surfaced as [`StereoViewingMethodV2::Reserved`] with the raw method byte.
+/// Each variant carries the method-specific parameters. Method codes that are reserved by
+/// DisplayID 2.x are surfaced as [`StereoViewingMethodV2::Reserved`] with the raw method byte.
 #[non_exhaustive]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum StereoViewingMethodV2 {
     /// Method 0x00 — Field-sequential stereo. `eye_on_high_half` identifies which eye view
     /// is delivered during the HIGH half of the sync signal; the other eye is delivered
-    /// during the LOW half. `Right` corresponds to payload bit 0 = 1 (spec wording
+    /// during the LOW half. `Right` corresponds to payload bit 0 = 1 (DisplayID's wording
     /// "L/R polarity 1"), `Left` to bit 0 = 0 ("L/R polarity 0").
     FieldSequential {
         /// Eye view delivered during the HIGH half of the sync signal.
@@ -491,7 +491,7 @@ pub enum StereoViewingMethodV2 {
     },
     /// Method 0xFF — Proprietary / vendor-defined.
     Proprietary,
-    /// Method codes reserved by the DisplayID 2.x specification (0x06–0xFE).
+    /// Method codes reserved by DisplayID 2.x (0x06–0xFE).
     Reserved(u8),
 }
 

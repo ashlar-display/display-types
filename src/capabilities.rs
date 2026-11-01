@@ -49,7 +49,7 @@ pub enum StereoMode {
 /// a descriptor with non-zero borders.
 ///
 /// Recorded on [`VideoMode::dtd_border_reading`] when the decoder's caller has settled
-/// which reading applies. Not `#[non_exhaustive]`: the specifications define exactly
+/// which reading applies. Not `#[non_exhaustive]`: the standards define exactly
 /// these two, and a consumer should match them exhaustively.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -67,8 +67,8 @@ pub enum DtdBorderReading {
 ///
 /// Decoded from byte 0 bits 2:0. Identifies which CVT variant the consumer should use
 /// to derive blanking parameters and pixel clock from the `(width, height, refresh_rate)`
-/// triple stored on [`VideoMode`]. Codes `3`–`7` are reserved by the DisplayID 2.x spec;
-/// unknown encodings are surfaced as [`CvtAlgorithm::Reserved`] so a future spec value
+/// triple stored on [`VideoMode`]. Codes `3`–`7` are reserved by DisplayID 2.x;
+/// unknown encodings are surfaced as [`CvtAlgorithm::Reserved`] so a future value
 /// does not block decoding of the rest of the descriptor.
 #[non_exhaustive]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -80,7 +80,7 @@ pub enum CvtAlgorithm {
     CvtRb,
     /// CVT-R2 / CVT-RB v2 (encoding `2`).
     CvtR2,
-    /// Spec-reserved encoding (`3`–`7`) preserved verbatim so unknown values do not block
+    /// Reserved encoding (`3`–`7`) preserved verbatim so unknown values do not block
     /// decoding of the rest of the descriptor.
     Reserved(u8),
 }
@@ -573,7 +573,7 @@ impl VideoMode {
     }
 }
 
-/// EDID specification version and revision, decoded from base block bytes 18–19.
+/// EDID version and revision, decoded from base block bytes 18–19.
 ///
 /// Most displays in use report version 1 with revision 3 or 4.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -611,7 +611,7 @@ impl<T: core::any::Any + core::fmt::Debug + Send + Sync> ExtensionData for T {
 
 /// Consumer-facing display capability model produced by a display data parser.
 ///
-/// All fields defined by the relevant specification are decoded and exposed here.
+/// All fields defined by the relevant standard are decoded and exposed here.
 /// No field is omitted because it appears obscure or unlikely to be needed — that
 /// judgement belongs to the consumer, not the library.
 ///
@@ -626,7 +626,7 @@ pub struct DisplayCapabilities {
     pub manufacturer: Option<crate::manufacture::ManufacturerId>,
     /// Manufacture date or model year.
     pub manufacture_date: Option<crate::manufacture::ManufactureDate>,
-    /// EDID specification version and revision.
+    /// EDID version and revision.
     pub edid_version: Option<EdidVersion>,
     /// Manufacturer-assigned product code.
     pub product_code: Option<u16>,

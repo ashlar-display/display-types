@@ -608,7 +608,7 @@ impl DisplayIdStereoInterface {
 /// Sequencing Block (DisplayID 1.x `0x0D`).
 ///
 /// Describes the minimum delays required when powering the display panel on and off.
-/// All fields are raw counts in **2 ms units** per the DisplayID 1.x §4.11 specification;
+/// All fields are raw counts in **2 ms units** per DisplayID 1.x §4.11;
 /// multiply by 2 to obtain milliseconds.
 ///
 /// The six parameters (T1–T6) follow the standard LVDS/eDP power sequencing model:

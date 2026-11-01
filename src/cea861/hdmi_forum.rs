@@ -1,6 +1,6 @@
 /// Maximum Fixed Rate Link (FRL) bandwidth supported by a HDMI 2.1 sink.
 ///
-/// Variants are assigned the `Max_FRL_Rate` nibble values from the HDMI 2.1a spec directly.
+/// Variants are assigned the `Max_FRL_Rate` nibble values HDMI 2.1a defines, directly.
 /// The discriminants establish the ordering: higher value = greater bandwidth.
 #[non_exhaustive]
 #[repr(u8)]
@@ -198,7 +198,7 @@ impl HdmiForumDsc {
 
 /// Decoded HDMI Forum Sink Capability Data Block (HF-SCDB, extended tag `0x79`).
 ///
-/// Defined in HDMI 2.1a section 10.3.6. Structure reconstructed from the Linux
+/// Defined by HDMI 2.1a. Structure reconstructed from the Linux
 /// kernel `drm_edid.c` and the edid-decode reference implementation.
 ///
 /// The block contains two reserved bytes after the extended tag, followed by the
