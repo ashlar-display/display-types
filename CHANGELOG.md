@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`preferred_image_size_mm` follows the preferred timing.** Its documentation now ties
   it to the descriptor `preferred_timing` comes from, and makes it `None` when the EDID has
   no preferred timing; it was the first slot's size whatever the version and feature bit.
+  Known gap until each descriptor's own size is decoded: an EDID 1.3 or earlier without the
+  feature bit reports no image size, even when its first timing descriptor gives one; the
+  field's documentation says where to read it meanwhile.
 - **`ModeSource::Dtd { index }` is documented as counting timing descriptors** (non-zero
   pixel clock), not every descriptor slot, as edid-decode numbers them.
 

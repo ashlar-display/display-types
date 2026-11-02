@@ -749,8 +749,18 @@ pub struct DisplayCapabilities {
     /// More precise than [`screen_size`][Self::screen_size] (which is in cm). `None` when
     /// the EDID has no preferred timing or that descriptor gives no size (either axis 0).
     /// It can be `Some` while `preferred_timing` is `None`: the descriptor gives a size but
-    /// its geometry does not decode (which the decoder reports as a warning). Other descriptors' sizes do not fill it, and neither
-    /// does DisplayID's image size (in `DisplayIdCapabilities::image_size`).
+    /// its geometry does not decode (which the decoder reports as a warning). Other
+    /// descriptors' sizes do not fill it, and neither does DisplayID's image size (in
+    /// `DisplayIdCapabilities::image_size`).
+    ///
+    /// # Known gap
+    ///
+    /// Each descriptor's own image size is not decoded yet. So an EDID 1.3 or earlier without
+    /// the preferred-timing feature bit, which has no preferred timing, reports no image size
+    /// here even when its first timing descriptor gives one (some EDID 1.3 monitors clear
+    /// the bit). Until per-descriptor sizes are added, read it from the base block: in the
+    /// first timing descriptor, bytes 12 and 13 hold the low 8 bits of the width and height
+    /// in mm, and byte 14 their high 4 bits (width in the upper nibble).
     pub preferred_image_size_mm: Option<(u16, u16)>,
     /// The preferred timing: the base block's first timing descriptor (non-zero pixel
     /// clock), wherever it sits, with its full timing and source
