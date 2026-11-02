@@ -174,8 +174,10 @@ pub enum ModeSource {
         /// block after it, as edid-decode numbers them.
         block: u8,
         /// Zero-based index of the descriptor among the timing descriptors of that block
-        /// (those with a non-zero pixel clock; display descriptors are not counted), as
-        /// edid-decode numbers them. Base-block index 0 is the preferred timing when the
+        /// (those with a non-zero pixel clock; display descriptors are not counted). In the
+        /// base block that is edid-decode's numbering; edid-decode carries its count on into
+        /// extension blocks, while this index restarts in each block. Base-block index 0 is
+        /// the preferred timing when the
         /// EDID has one ([`DisplayCapabilities::preferred_timing`]).
         index: u8,
     },
