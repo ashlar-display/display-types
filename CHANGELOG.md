@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`DisplayCapabilities::preferred_timing`**: the preferred timing as a `VideoMode`, in
+  every build (unlike `supported_modes`). It is the base block's first timing descriptor;
+  EDID 1.4 and later always have one, EDID 1.3 and earlier only with the preferred-timing
+  feature bit set (as edid-decode, libdisplay-info and Linux's DRM read it). Set only by
+  the base block's decoder.
+
+### Changed
+
+- **`preferred_image_size_mm` follows the preferred timing.** Its documentation now ties
+  it to the descriptor `preferred_timing` comes from, and makes it `None` when the EDID has
+  no preferred timing; it was the first slot's size whatever the version and feature bit.
+- **`ModeSource::Dtd { index }` is documented as counting timing descriptors** (non-zero
+  pixel clock), not every descriptor slot, as edid-decode numbers them.
+
 ## [0.5.0] - 2026-10-28
 
 ### Breaking changes
