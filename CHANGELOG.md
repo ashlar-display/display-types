@@ -24,7 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   feature bit reports no image size, even when its first timing descriptor gives one; the
   field's documentation says where to read it meanwhile.
 - **`ModeSource::Dtd { index }` is documented as counting timing descriptors** (non-zero
-  pixel clock), not every descriptor slot, as edid-decode numbers them.
+  pixel clock) per block, not every descriptor slot; in the base block that is
+  edid-decode's numbering.
 
 ## [0.5.0] - 2026-10-28
 
