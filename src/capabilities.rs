@@ -49,7 +49,7 @@ pub enum StereoMode {
 /// a descriptor with non-zero borders.
 ///
 /// Recorded on [`VideoMode::dtd_border_reading`] when the decoder's caller has settled
-/// which reading applies. Not `#[non_exhaustive]`: the specifications define exactly
+/// which reading applies. Not `#[non_exhaustive]`: the standards define exactly
 /// these two, and a consumer should match them exhaustively.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -67,8 +67,8 @@ pub enum DtdBorderReading {
 ///
 /// Decoded from byte 0 bits 2:0. Identifies which CVT variant the consumer should use
 /// to derive blanking parameters and pixel clock from the `(width, height, refresh_rate)`
-/// triple stored on [`VideoMode`]. Codes `3`–`7` are reserved by the DisplayID 2.x spec;
-/// unknown encodings are surfaced as [`CvtAlgorithm::Reserved`] so a future spec value
+/// triple stored on [`VideoMode`]. Codes `3`–`7` are reserved by DisplayID 2.x;
+/// unknown encodings are surfaced as [`CvtAlgorithm::Reserved`] so a future value
 /// does not block decoding of the rest of the descriptor.
 #[non_exhaustive]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -80,7 +80,7 @@ pub enum CvtAlgorithm {
     CvtRb,
     /// CVT-R2 / CVT-RB v2 (encoding `2`).
     CvtR2,
-    /// Spec-reserved encoding (`3`–`7`) preserved verbatim so unknown values do not block
+    /// Reserved encoding (`3`–`7`) preserved verbatim so unknown values do not block
     /// decoding of the rest of the descriptor.
     Reserved(u8),
 }
@@ -173,8 +173,12 @@ pub enum ModeSource {
         /// The EDID block holding the descriptor: 0 for the base block, `n` for the `n`th
         /// block after it, as edid-decode numbers them.
         block: u8,
-        /// Zero-based index of the descriptor among the DTDs of that block, so base-block
-        /// index 0 is the preferred timing.
+        /// Zero-based index of the descriptor among the timing descriptors of that block
+        /// (those with a non-zero pixel clock; display descriptors are not counted). In the
+        /// base block that is edid-decode's numbering; edid-decode carries its count on into
+        /// extension blocks, while this index restarts in each block. Base-block index 0 is
+        /// the preferred timing when the
+        /// EDID has one ([`DisplayCapabilities::preferred_timing`]).
         index: u8,
     },
 }
@@ -573,7 +577,7 @@ impl VideoMode {
     }
 }
 
-/// EDID specification version and revision, decoded from base block bytes 18–19.
+/// EDID version and revision, decoded from base block bytes 18–19.
 ///
 /// Most displays in use report version 1 with revision 3 or 4.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -611,7 +615,7 @@ impl<T: core::any::Any + core::fmt::Debug + Send + Sync> ExtensionData for T {
 
 /// Consumer-facing display capability model produced by a display data parser.
 ///
-/// All fields defined by the relevant specification are decoded and exposed here.
+/// All fields defined by the relevant standard are decoded and exposed here.
 /// No field is omitted because it appears obscure or unlikely to be needed — that
 /// judgement belongs to the consumer, not the library.
 ///
@@ -626,7 +630,7 @@ pub struct DisplayCapabilities {
     pub manufacturer: Option<crate::manufacture::ManufacturerId>,
     /// Manufacture date or model year.
     pub manufacture_date: Option<crate::manufacture::ManufactureDate>,
-    /// EDID specification version and revision.
+    /// EDID version and revision.
     pub edid_version: Option<EdidVersion>,
     /// Manufacturer-assigned product code.
     pub product_code: Option<u16>,
@@ -742,14 +746,45 @@ pub struct DisplayCapabilities {
     /// Maximum pixel clock in MHz.
     pub max_pixel_clock_mhz: Option<u16>,
     /// Image size of the preferred timing, in millimetres `(width_mm, height_mm)`: the size
-    /// in the base block's first Detailed Timing Descriptor, which EDID defines as the
-    /// preferred timing.
+    /// in the descriptor that [`preferred_timing`][Self::preferred_timing] is decoded from.
     ///
     /// More precise than [`screen_size`][Self::screen_size] (which is in cm). `None` when
-    /// that descriptor gives no size (either axis 0) or the first slot holds no timing.
-    /// Other descriptors' sizes do not fill it, and neither does DisplayID's image size
-    /// (in `DisplayIdCapabilities::image_size`).
+    /// the EDID has no preferred timing or that descriptor gives no size (either axis 0).
+    /// It can be `Some` while `preferred_timing` is `None`: the descriptor gives a size but
+    /// its geometry does not decode (which the decoder reports as a warning). Other
+    /// descriptors' sizes do not fill it, and neither does DisplayID's image size (in
+    /// `DisplayIdCapabilities::image_size`).
+    ///
+    /// # Known gap
+    ///
+    /// Each descriptor's own image size is not decoded yet. So an EDID 1.3 or earlier without
+    /// the preferred-timing feature bit, which has no preferred timing, reports no image size
+    /// here even when its first timing descriptor gives one (some EDID 1.3 monitors clear
+    /// the bit). Until per-descriptor sizes are added, read it from the base block: in the
+    /// first timing descriptor, bytes 12 and 13 hold the low 8 bits of the width and height
+    /// in mm, and byte 14 their high 4 bits (width in the upper nibble).
     pub preferred_image_size_mm: Option<(u16, u16)>,
+    /// The preferred timing: the base block's first timing descriptor (non-zero pixel
+    /// clock), wherever it sits, with its full timing and source
+    /// `ModeSource::Dtd { block: 0, index: 0 }`.
+    ///
+    /// EDID 1.4 and later always have one; EDID 1.3 and earlier only when
+    /// [`DisplayFeatureFlags::PREFERRED_TIMING`][crate::features::DisplayFeatureFlags::PREFERRED_TIMING]
+    /// is set in [`display_features`][Self::display_features]. `None` when the EDID has no
+    /// preferred timing, the base block holds no timing descriptor, or the descriptor's
+    /// geometry does not decode; the decoder reports the last two as warnings. Extension
+    /// blocks never fill it. With `alloc` the same mode
+    /// is also in `supported_modes`, where it may have taken over an established or
+    /// standard timing's entry.
+    ///
+    /// Available in every build, unlike `supported_modes`.
+    ///
+    /// Set by the base block's decoder, together with
+    /// [`preferred_image_size_mm`][Self::preferred_image_size_mm], replacing earlier values.
+    /// A step that corrects both (a quirk fix) runs after that decoder; a custom decoder that
+    /// replaces it sets both. Extension decoders leave both alone (a preferred flag in
+    /// another block belongs in that block's own data).
+    pub preferred_timing: Option<VideoMode>,
     /// Video timing formula reported in the display range limits descriptor.
     pub timing_formula: Option<crate::timing::TimingFormula>,
     /// DCM polynomial coefficients.
@@ -986,5 +1021,35 @@ mod extension_data_tests {
         foo.0 += 1;
         caps.set_extension_data(0x70, foo);
         assert_eq!(caps.get_extension_data::<Foo>(0x70), Some(&Foo(2)));
+    }
+}
+
+#[cfg(all(test, feature = "serde"))]
+mod serde_tests {
+    use super::*;
+
+    fn preferred_1080p60() -> VideoMode {
+        VideoMode::new(1920, 1080, 60u32, false)
+            .with_pixel_clock(148_500)
+            .with_source(ModeSource::Dtd { block: 0, index: 0 })
+    }
+
+    #[test]
+    fn preferred_timing_round_trips() {
+        let caps = DisplayCapabilities {
+            preferred_timing: Some(preferred_1080p60()),
+            ..Default::default()
+        };
+        let json = serde_json::to_string(&caps).unwrap();
+        let back: DisplayCapabilities = serde_json::from_str(&json).unwrap();
+        assert_eq!(back.preferred_timing, Some(preferred_1080p60()));
+    }
+
+    #[test]
+    fn dump_without_preferred_timing_still_loads() {
+        let mut value = serde_json::to_value(DisplayCapabilities::default()).unwrap();
+        value.as_object_mut().unwrap().remove("preferred_timing");
+        let back: DisplayCapabilities = serde_json::from_value(value).unwrap();
+        assert_eq!(back.preferred_timing, None);
     }
 }

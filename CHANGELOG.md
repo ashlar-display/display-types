@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-11-02
+
+### Added
+
+- **`DisplayCapabilities::preferred_timing`**: the preferred timing as a `VideoMode`, in
+  every build (unlike `supported_modes`). It is the base block's first timing descriptor;
+  EDID 1.4 and later always have one, EDID 1.3 and earlier only with the preferred-timing
+  feature bit set (as edid-decode, libdisplay-info and Linux's DRM read it). Set only by
+  the base block's decoder.
+
+### Changed
+
+- **`preferred_image_size_mm` follows the preferred timing.** Its documentation now ties
+  it to the descriptor `preferred_timing` comes from, and makes it `None` when the EDID has
+  no preferred timing; it was the first slot's size whatever the version and feature bit.
+  Known gap until each descriptor's own size is decoded: an EDID 1.3 or earlier without the
+  feature bit reports no image size, even when its first timing descriptor gives one; the
+  field's documentation says where to read it meanwhile.
+- **`ModeSource::Dtd { index }` is documented as counting timing descriptors** (non-zero
+  pixel clock) per block, not every descriptor slot; in the base block that is
+  edid-decode's numbering.
+
 ## [0.5.0] - 2026-10-28
 
 ### Breaking changes
@@ -199,7 +221,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Amoled`, or `Other(u8)` for reserved/vendor-specific values. Provides `from_byte` /
   `as_byte` for round-trippable decoding.
 - `ScanOrientation` enum — decodes bits 2:0 of byte 11 of block 0x21 into the eight
-  spec-defined fast-axis/slow-axis combinations (e.g. `LeftRightTopBottom` for conventional
+  defined fast-axis/slow-axis combinations (e.g. `LeftRightTopBottom` for conventional
   raster order). Provides `from_bits` / `as_bits`.
 - `DynamicTimingRange` — dynamic timing range from 2.x block 0x25: min/max pixel clock in kHz
   (3-byte LE, 1 kHz resolution), min/max vertical refresh rate in Hz (9-bit), VRR support flag.
@@ -210,7 +232,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   6/8/10/12/14/16 bpc) and `ColorDepthsSubsampled` (YCbCr 4:2:2 and 4:2:0 — 8/10/12/14/16 bpc).
   `audio_flags` and `color_space_eotf_combos` (renamed from `color_space_eotf_1` — the
   `_1` suffix incorrectly implied sequel bytes; payload byte 6 is a single defined-combinations
-  bitmask) remain `u8` pending full spec typing.
+  bitmask) remain `u8` pending full typing.
 - `DisplayIdVendorSpecific` — envelope for 2.x block 0x7E: 3-byte IEEE OUI plus opaque
   vendor-defined `data: Vec<u8>`. The crate does not interpret payload semantics; consumers
   match on `oui` to dispatch to vendor-specific parsers (e.g. Dolby `00-D0-46`,
@@ -240,7 +262,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `CvtAlgorithm` enum — CVT formula selector for DisplayID 2.x Type V (`0x11`) and Type IX
   (`0x24`) descriptors: `Cvt` (encoding `0`, standard CVT, no reduced blanking), `CvtRb`
   (encoding `1`, CVT-RB v1), `CvtR2` (encoding `2`, CVT-RB v2 / "CVT-R2"), plus
-  `Reserved(u8)` for spec-reserved encodings (`3`–`7`). Provides `from_bits(b)` decoding the
+  `Reserved(u8)` for reserved encodings (`3`–`7`). Provides `from_bits(b)` decoding the
   3-bit field; marked `#[non_exhaustive]`.
 - `TypeIxStereoMode` enum — per-mode stereo indicator decoded from Type V and Type IX
   descriptor byte 0 bits 6:5: `Mono` (`0b00`), `Stereo` (`0b01`),
@@ -298,10 +320,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DisplayIdStereoInterfaceV2` no longer implements `Copy`. The new
   `timing_codes: Vec<StereoTimingCode>` field (alloc-gated) is not `Copy`; callers that
   relied on implicit copy semantics must switch to `.clone()`.
-- `CvtAlgorithm` variants corrected to match the DisplayID 2.x spec (cross-referenced
+- `CvtAlgorithm` variants corrected to match DisplayID 2.x (cross-referenced
   against `edid-decode`). The prior variant set (`CvtRb1` / `CvtRb2` / `CvtRb3` /
-  `ReducedBlankingCvtRb1` / `ReducedBlankingCvtRb2`) was based on a misreading of the
-  spec — bits 2:0 = `0` is standard CVT (no reduced blanking), not CVT-RB v1. The
+  `ReducedBlankingCvtRb1` / `ReducedBlankingCvtRb2`) was based on a misreading of
+  DisplayID 2.x — bits 2:0 = `0` is standard CVT (no reduced blanking), not CVT-RB v1. The
   corrected variants are `Cvt` (0), `CvtRb` (1), `CvtR2` (2), `Reserved(u8)` (3–7).
   `compute_type_ix_timing` dispatch updated accordingly: `Cvt` returns `None` (no
   evaluator), `CvtRb` → CVT-RB v1 evaluator, `CvtR2` → CVT-RB v2 evaluator.
@@ -455,7 +477,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   included here because it is signaled through CEA/CTA extension blocks rather than the
   base block.
 - `HdmiForumFrl` now implements `PartialOrd` and `Ord`. Ordering is by bandwidth: higher
-  variant = greater link capacity. The implementation compares the spec `Max_FRL_Rate`
+  variant = greater link capacity. The implementation compares the `Max_FRL_Rate`
   discriminant values directly rather than relying on declaration order.
 
 ### Changed
@@ -463,7 +485,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `HdmiForumFrl` is now `#[repr(u8)]` with explicit discriminants matching the HDMI 2.1a
   `Max_FRL_Rate` nibble values (0–6).
 - `vic_to_mode` now populates `pixel_clock_khz` for all VICs 1–64 (CEA-861-E) and
-  65–127, 193–219 (CTA-861-I). Pixel clocks are sourced from the CEA-861/CTA-861 spec.
+  65–127, 193–219 (CTA-861-I). Pixel clocks are sourced from CEA-861/CTA-861.
 - `dmt_to_mode` now populates `pixel_clock_khz` for all DMT IDs 0x01–0x58. Pixel clocks
   are sourced from VESA DMT v1.13.
 

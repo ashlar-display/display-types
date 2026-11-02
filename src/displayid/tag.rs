@@ -1,6 +1,6 @@
 //! DisplayID 1.x and 2.x data block tag constants.
 //!
-//! Each constant corresponds to a data block type defined in the DisplayID specification.
+//! Each constant corresponds to a data block type defined by DisplayID.
 //! Tags are the first byte of the 3-byte data block header.
 
 /// Product Identification Block (DisplayID 1.x §4.2).
