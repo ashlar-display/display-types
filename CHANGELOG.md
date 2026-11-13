@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Internal
 
+- **`doc/roadmap.md` lists what comes next**, additive and breaking, without version
+  numbers; the changelog stays the record of what shipped.
 - **`doc/architecture.md` describes the crate**: its role between parser, negotiation and
   the layers below, the two models, the modules, what each build has, and the design rules.
 - **`CONTRIBUTING.md` matches the CI checks** (clippy over all targets, rustdoc with
