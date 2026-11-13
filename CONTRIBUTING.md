@@ -53,8 +53,9 @@ is fine.
 
 display-types is the shared vocabulary of the
 [Ashlar crates](https://ashlar-display.org/crates.html): they depend on it as a versioned
-crate dependency, and many re-export its types, so a breaking release of display-types is
-a breaking release of each of them. Changes that add or modify public API must be merged,
+crate dependency, and many re-export its types, so moving one of them to a breaking release
+of display-types is a breaking release of that crate, unless its version requirement keeps
+accepting the old release as well. Changes that add or modify public API must be merged,
 tagged, and published to crates.io before downstream crates can adopt them. The workflow
 is:
 
