@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Internal
 
+- **CI runs with a read-only token by default**: `ci.yml` sets `permissions: contents: read`;
+  the coverage job keeps the write permissions it needs to open its ratchet PR. The test job
+  ran with the repository's default token permissions.
 - **The documentation is built as docs.rs builds it, weekly**: `docs.yml` runs
   `cargo doc --all-features` with nightly and `--cfg docsrs` (and `-D warnings`), so a
   nightly change to the `doc_cfg` feature badges shows up before it breaks a docs.rs build.
