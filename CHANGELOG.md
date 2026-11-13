@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Internal
 
+- **`doc/architecture.md` describes the crate**: its role between parser, negotiation and
+  the layers below, the two models, the modules, what each build has, and the design rules.
 - **`CONTRIBUTING.md` matches the CI checks** (clippy over all targets, rustdoc with
   `-D warnings`, every feature set, the bare-metal builds and the MSRV), and its publishing
   section links the crate list instead of naming two dependents.
