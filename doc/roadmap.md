@@ -36,6 +36,12 @@ What comes next for display-types. What has shipped is in [CHANGELOG.md](../CHAN
 
 ## Breaking
 
+- **The same API in every build.** `DisplayCapabilities`' supported modes, warnings,
+  extension data and DisplayID transfer characteristic are public fields that exist only
+  with `alloc`, and their accessors are `alloc`-only too. Because Cargo turns a feature on
+  for every crate in a build that one of them asks for, a `no_std` user's code can stop
+  compiling when another dependency enables `alloc`. The storage becomes private behind
+  accessors that exist in every build; `alloc` only adds methods.
 - **Group `DisplayCapabilities`** into modes, color, HDR, VRR and physical parts, instead
   of one flat struct.
 - **Link-agnostic types for DisplayPort.** `ResolvedDisplayConfig::frl_rate` is an HDMI
