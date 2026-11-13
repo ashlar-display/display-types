@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Internal
 
+- **Clippy lints the tests too, in every feature set**: `--all-targets`, once each with the
+  default features, none, `alloc` only and `serde`, in CI and in the publish workflow's
+  `verify` job; it linted only the library with the default features.
 - **CI fails on `main` when `Cargo.toml` has a `[patch]` section**: `cargo package` drops
   it, so a release built with one would not build from crates.io.
 - **CI's test job does not keep the checkout's git credentials** (`persist-credentials:
