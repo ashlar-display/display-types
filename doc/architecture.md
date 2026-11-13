@@ -51,7 +51,8 @@ depend on negotiation.
 Without `alloc`, `DisplayCapabilities` has no supported modes, warnings, extension data or
 DisplayID transfer characteristic, and the block types that hold lists do not exist. A
 parser without `alloc` keeps those in fixed-capacity storage of its own. `serde` derives
-`Serialize` and `Deserialize` on the public types; it is independent of the other features.
+`Serialize` and `Deserialize` on the public types. It takes serde with its default
+features, so today it needs `std`; making it build without `std` is on the roadmap.
 
 ## Design rules
 
@@ -69,9 +70,12 @@ parser without `alloc` keeps those in fixed-capacity storage of its own. `serde`
   definition (a chromaticity point, a refresh rate, a manufacturer ID) are not. Crates
   outside this one (parsers, tests) build the non-exhaustive structs with a constructor,
   or from `Default` and the public fields.
-- **Features are additive.** Enabling `alloc` or `std` only adds types and methods; it
-  never changes a type that exists without it, because Cargo enables a feature for every
-  crate in a build that one of them asks for.
+- **Features are additive.** Enabling `alloc` or `std` should only add types and methods,
+  never change a type that exists without it, because Cargo enables a feature for every
+  crate in a build that one of them asks for. `DisplayCapabilities` does not meet this yet:
+  its supported modes, warnings, extension data and DisplayID transfer characteristic are
+  public fields that exist only with `alloc`. Moving them behind accessors is on the
+  roadmap.
 - **Extensible without forking.** A parser's custom handler stores its own typed data in
   `DisplayCapabilities::extension_data`, keyed by extension tag, and reports its own
   warning types as `ParseWarning` (any `core::error::Error`); consumers recover them by
