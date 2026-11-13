@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Internal
 
+- **The README has Stack position, Out of scope and Documentation sections**, the last
+  linking the architecture, setup, testing and roadmap documents.
 - **`doc/roadmap.md` lists what comes next**, additive and breaking, without version
   numbers; the changelog stays the record of what shipped.
 - **`doc/architecture.md` describes the crate**: its role between parser, negotiation and
