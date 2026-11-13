@@ -336,6 +336,45 @@ impl HdmiForumSinkCap {
 mod tests {
     use super::*;
 
+    /// `HdmiForumDsc::new` with only flag `index` (in argument order) set.
+    fn dsc_with_flag(index: usize) -> HdmiForumDsc {
+        let f = |i| i == index;
+        HdmiForumDsc::new(
+            f(0),
+            f(1),
+            f(2),
+            f(3),
+            f(4),
+            f(5),
+            f(6),
+            HdmiForumFrl::Rate6Gbps4Lanes,
+            HdmiDscMaxSlices::Slices4,
+            4096,
+        )
+    }
+
+    #[test]
+    fn dsc_new_keeps_each_flag_in_its_field() {
+        for index in 0..7 {
+            let d = dsc_with_flag(index);
+            let flags = [
+                d.dsc_1p2,
+                d.native_420,
+                d.qms_tfr_max,
+                d.qms_tfr_min,
+                d.all_bpc,
+                d.bpc12,
+                d.bpc10,
+            ];
+            for (field, &set) in flags.iter().enumerate() {
+                assert_eq!(set, field == index, "argument {index}, field {field}");
+            }
+            assert_eq!(d.max_frl_rate, HdmiForumFrl::Rate6Gbps4Lanes);
+            assert_eq!(d.max_slices, HdmiDscMaxSlices::Slices4);
+            assert_eq!(d.max_chunk_bytes, 4096);
+        }
+    }
+
     #[test]
     fn lanes_of_every_rate() {
         let expected = [

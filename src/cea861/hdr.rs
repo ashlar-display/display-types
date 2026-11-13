@@ -84,3 +84,24 @@ impl HdrStaticMetadata {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn hdr_static_metadata_new_keeps_each_luminance_in_its_field() {
+        let m = HdrStaticMetadata::new(
+            HdrEotf::SDR | HdrEotf::ST2084,
+            0x01,
+            Some(1000.0),
+            Some(400.0),
+            Some(0.05),
+        );
+        assert_eq!(m.eotf, HdrEotf::SDR | HdrEotf::ST2084);
+        assert_eq!(m.static_metadata_descriptors, 0x01);
+        assert_eq!(m.max_luminance, Some(1000.0));
+        assert_eq!(m.max_fall, Some(400.0));
+        assert_eq!(m.min_luminance, Some(0.05));
+    }
+}

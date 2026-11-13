@@ -158,3 +158,106 @@ impl VesaDisplayDeviceBlock {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// `VesaDisplayDeviceBlock::new` with distinct numbers in every numeric field and only
+    /// flag `index` (in argument order) set.
+    fn block_with_flag(index: usize) -> VesaDisplayDeviceBlock {
+        let f = |i| i == index;
+        VesaDisplayDeviceBlock::new(
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            700,
+            Some(800),
+            Some(900),
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            f(0),
+            f(1),
+            f(2),
+            f(3),
+            f(4),
+            f(5),
+            Some(-19),
+            20,
+            21,
+            22,
+            23,
+            24,
+            [25, 26, 27, 28, 29, 30, 31, 32],
+            33,
+            f(6),
+            34,
+            35,
+        )
+    }
+
+    #[test]
+    fn new_keeps_each_number_in_its_field() {
+        let b = block_with_flag(usize::MAX);
+        assert_eq!(b.interface_type, 1);
+        assert_eq!(b.num_links, 2);
+        assert_eq!(b.interface_version, 3);
+        assert_eq!(b.interface_release, 4);
+        assert_eq!(b.content_protection, 5);
+        assert_eq!(b.min_clock_mhz, 6);
+        assert_eq!(b.max_clock_mhz, 700);
+        assert_eq!(b.native_width, Some(800));
+        assert_eq!(b.native_height, Some(900));
+        assert_eq!(b.aspect_ratio_raw, 10);
+        assert_eq!(b.default_orientation, 11);
+        assert_eq!(b.rotation_capability, 12);
+        assert_eq!(b.zero_pixel_location, 13);
+        assert_eq!(b.scan_direction, 14);
+        assert_eq!(b.subpixel_layout, 15);
+        assert_eq!(b.h_pitch_hundredths_mm, 16);
+        assert_eq!(b.v_pitch_hundredths_mm, 17);
+        assert_eq!(b.dithering, 18);
+        assert_eq!(b.audio_delay_ms, Some(-19));
+        assert_eq!(b.frame_rate_conversion, 20);
+        assert_eq!(b.frame_rate_range, 21);
+        assert_eq!(b.native_frame_rate, 22);
+        assert_eq!(b.interface_color_depth, 23);
+        assert_eq!(b.display_color_depth, 24);
+        assert_eq!(
+            b.additional_chromaticities,
+            [25, 26, 27, 28, 29, 30, 31, 32]
+        );
+        assert_eq!(b.response_time_ms, 33);
+        assert_eq!(b.h_overscan_pct, 34);
+        assert_eq!(b.v_overscan_pct, 35);
+    }
+
+    #[test]
+    fn new_keeps_each_flag_in_its_field() {
+        for index in 0..7 {
+            let b = block_with_flag(index);
+            let flags = [
+                b.direct_drive,
+                b.overdrive_not_recommended,
+                b.deinterlacing,
+                b.audio_on_video_interface,
+                b.separate_audio_inputs,
+                b.audio_input_override,
+                b.response_time_white_to_black,
+            ];
+            for (field, &set) in flags.iter().enumerate() {
+                assert_eq!(set, field == index, "argument {index}, field {field}");
+            }
+        }
+    }
+}
