@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Internal
 
+- **CI's test job does not keep the checkout's git credentials** (`persist-credentials:
+  false`); it never pushes. The coverage job keeps them to push its ratchet branch.
 - **CI runs with a read-only token by default**: `ci.yml` sets `permissions: contents: read`;
   the coverage job keeps the write permissions it needs to open its ratchet PR. The test job
   ran with the repository's default token permissions.
