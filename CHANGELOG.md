@@ -89,6 +89,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   flags.
 - **`doc/testing.md`'s table lists the constructor tests** in `hdr.rs`, `vesa_dddb.rs`,
   `panel.rs` and `hdmi_forum.rs`.
+- **`CONTRIBUTING.md` matches the architecture document on `#[non_exhaustive]`** (values
+  complete by definition are not), states the provenance rule for claims about HDMI
+  behaviour, and gives the coverage tolerance as 0.1 percentage points, not 0.1%.
 
 ## [0.5.1] - 2026-11-02
 

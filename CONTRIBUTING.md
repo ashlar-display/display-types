@@ -26,10 +26,15 @@ is fine.
 - Public items need rustdoc comments, and intra-doc links must resolve
   (`cargo rustdoc --all-features -- -D warnings` must pass).
 - `#![forbid(unsafe_code)]` is enforced; no unsafe code.
+- A claim about HDMI behaviour (a rule, a default, a threshold, a register encoding) cites
+  at least two independent public implementations (repository, commit, file and line).
+  Where implementations differ, the behaviour is a setting with the majority as default.
 - Keep `no_std` compatibility. All scalar types (enums and copy structs) must compile
   without `alloc` or `std`. Heap-allocated types are gated behind `#[cfg(any(feature =
   "alloc", feature = "std"))]`.
-- All public structs and enums must be `#[non_exhaustive]`.
+- Public structs and enums that may gain fields or variants are `#[non_exhaustive]`; small
+  values that are complete by definition (a chromaticity point, a refresh rate, a
+  manufacturer ID) are not. See [doc/architecture.md](doc/architecture.md).
 
 ## Commit and PR expectations
 
@@ -41,7 +46,7 @@ is fine.
   inputs does.
 - CI must be green before a PR can merge: fmt, clippy, docs, the tests in every feature
   set, the bare-metal `no_std` builds, the same tests and builds on the MSRV (Rust 1.85),
-  and coverage must not drop more than 0.1% below the baseline (stored in
+  and coverage must not drop more than 0.1 percentage points below the baseline (stored in
   `.coverage-baseline`). New logic without tests will likely trip this.
 
 ## Publishing and downstream dependencies
