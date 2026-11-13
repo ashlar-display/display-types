@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Internal
 
+- **`doc/testing.md` describes the tests**: what each module's unit tests check, the
+  doctests, the feature sets CI runs them in, and the coverage ratchet.
 - **The MSRV is checked**: an `MSRV` job in CI and in the publish workflow (which waits for
   it) runs the tests in every feature set and the bare-metal builds on the `rust-version`
   from `Cargo.toml` (1.85) with `cargo msrv verify`; the crate declared it, and nothing

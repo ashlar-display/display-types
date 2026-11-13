@@ -53,8 +53,9 @@ cargo add display-types --no-default-features
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and [doc/setup.md](doc/setup.md)
-for build and test instructions.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines, [doc/setup.md](doc/setup.md)
+for build and test instructions and [doc/testing.md](doc/testing.md) for how the crate is
+tested.
 
 ## Verifying releases
 
