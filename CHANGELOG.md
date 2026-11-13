@@ -79,6 +79,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the update to Rust 1.100, CI restored a `target/` built by 1.99; `cargo llvm-cov clean
   --workspace` leaves the old instrumented binaries there, and the report counted their
   lines as uncovered.
+- **The publish workflow's `verify` job fails on a `[patch]` section** too, as `ci.yml`
+  does on `main`: the release does not wait for `main`'s CI.
 
 ## [0.5.1] - 2026-11-02
 
