@@ -71,9 +71,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   CI workflows, Dependabot configuration and coverage baseline.
 - **Constructor tests for the types with many arguments of one type**
   (`PowerSequencing`, `HdrStaticMetadata`, `HdmiForumDsc`, `VesaDisplayDeviceBlock`):
-  each argument lands in its own field, so two swapped arguments fail a test. Rust 1.100
-  counts more lines than 1.99 for the same code, which put line coverage below the
-  baseline (75.71% against 76.14%) without a code change; these tests raise it to 81.54%.
+  each argument lands in its own field, so two swapped arguments fail a test. They raise
+  line coverage to 81.54%. They were added when CI measured 75.71% against the 76.14%
+  baseline after the update to Rust 1.100; that drop came from the coverage cache (below),
+  not from the code, which measures 76.56% on Rust 1.100 from a clean `target/`.
+- **The coverage job's cache is keyed on the Rust version** as well as `Cargo.lock`. After
+  the update to Rust 1.100, CI restored a `target/` built by 1.99; `cargo llvm-cov clean
+  --workspace` leaves the old instrumented binaries there, and the report counted their
+  lines as uncovered.
 
 ## [0.5.1] - 2026-11-02
 
