@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Internal
 
+- **`CONTRIBUTING.md` matches the CI checks** (clippy over all targets, rustdoc with
+  `-D warnings`, every feature set, the bare-metal builds and the MSRV), and its publishing
+  section links the crate list instead of naming two dependents.
 - **`doc/setup.md` lists the checks CI runs**: clippy and the tests in every feature set,
   rustdoc with every feature, the bare-metal `no_std` builds and the MSRV check.
 - **`doc/testing.md` describes the tests**: what each module's unit tests check, the
