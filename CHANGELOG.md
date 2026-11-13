@@ -89,6 +89,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The `cea861::oui` example compiles without `alloc`**: it builds a
   `VendorSpecificBlock`, which needs `alloc`, so `cargo test --no-default-features`
   failed on it; it now runs only where that type exists.
+- **The MSRV job shows why it failed**: `cargo msrv verify` runs without
+  `--output-format minimal`, which printed only `true` or `false` and dropped the compiler
+  error.
 
 ## [0.5.1] - 2026-11-02
 
