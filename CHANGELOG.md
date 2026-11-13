@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The documentation is built as docs.rs builds it, weekly**: `docs.yml` runs
   `cargo doc --all-features` with nightly and `--cfg docsrs` (and `-D warnings`), so a
   nightly change to the `doc_cfg` feature badges shows up before it breaks a docs.rs build.
+- **The README's Rust examples run as doctests** (`ReadmeDoctests` in `lib.rs`, compiled
+  only for `cargo test`), so an example added to it is checked against the API.
 - **The published `.crate` holds only what the crate needs**: `include` in `Cargo.toml`
   limits it to the sources, `doc/`, the README, changelog and license; it also shipped the
   CI workflows, Dependabot configuration and coverage baseline.
