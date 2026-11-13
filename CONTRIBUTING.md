@@ -21,13 +21,20 @@ is fine.
 
 ## Coding standards
 
-- Run `cargo fmt` and `cargo clippy -- -D warnings` before pushing.
-- Public items need rustdoc comments (`cargo rustdoc -- -D missing_docs` must pass).
+- Run `cargo fmt` and `cargo clippy --all-targets -- -D warnings` before pushing; CI runs
+  clippy in every feature set ([doc/setup.md](doc/setup.md) lists the commands).
+- Public items need rustdoc comments, and intra-doc links must resolve
+  (`cargo rustdoc --all-features -- -D warnings` must pass).
 - `#![forbid(unsafe_code)]` is enforced; no unsafe code.
+- A claim about HDMI behaviour (a rule, a default, a threshold, a register encoding) cites
+  at least two independent public implementations (repository, commit, file and line).
+  Where implementations differ, the behaviour is a setting with the majority as default.
 - Keep `no_std` compatibility. All scalar types (enums and copy structs) must compile
   without `alloc` or `std`. Heap-allocated types are gated behind `#[cfg(any(feature =
   "alloc", feature = "std"))]`.
-- All public structs and enums must be `#[non_exhaustive]`.
+- Public structs and enums that may gain fields or variants are `#[non_exhaustive]`; small
+  values that are complete by definition (a chromaticity point, a refresh rate, a
+  manufacturer ID) are not. See [doc/architecture.md](doc/architecture.md).
 
 ## Commit and PR expectations
 
@@ -37,16 +44,20 @@ is fine.
 - Tests are expected for new logic. New types without associated logic (plain data
   structs) don't need unit tests, but any function that maps or derives values from
   inputs does.
-- CI must be green before a PR can merge: fmt, clippy, docs, all test and build
-  targets, and coverage must not drop more than 0.1% below the baseline (stored in
+- CI must be green before a PR can merge: fmt, clippy, docs, the tests in every feature
+  set, the bare-metal `no_std` builds, the same tests and builds on the MSRV (Rust 1.85),
+  and coverage must not drop more than 0.1 percentage points below the baseline (stored in
   `.coverage-baseline`). New logic without tests will likely trip this.
 
 ## Publishing and downstream dependencies
 
-display-types is consumed by [piaf](https://github.com/ashlar-display/piaf) and
-[concordance](https://github.com/ashlar-display/concordance) as versioned crate
-dependencies. Changes that add or modify public API must be merged, tagged, and
-published to crates.io before downstream crates can adopt them. The workflow is:
+display-types is the shared vocabulary of the
+[Ashlar crates](https://ashlar-display.org/crates.html): they depend on it as a versioned
+crate dependency, and many re-export its types, so moving one of them to a breaking release
+of display-types is a breaking release of that crate, unless its version requirement keeps
+accepting the old release as well. Changes that add or modify public API must be merged,
+tagged, and published to crates.io before downstream crates can adopt them. The workflow
+is:
 
 1. Merge and tag a release in this repo (`vX.Y.Z`).
 2. The publish CI workflow uploads the new version to crates.io.

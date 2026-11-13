@@ -10,6 +10,7 @@ repository = "https://github.com/ashlar-display/display-types"
 homepage = "https://ashlar-display.org"
 keywords = ["ashlar", "hdmi", "no-std", "edid", "display"]
 categories = ["hardware-support", "embedded", "no-std", "no-std::no-alloc"]
+include = ["src/**", "doc/**", "README.md", "CHANGELOG.md", "LICENSE"]
 
 [features]
 default = ["std"]
@@ -23,3 +24,10 @@ serde = { version = "1.0", optional = true, features = ["derive"] }
 
 [dev-dependencies]
 serde_json = "1"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(docsrs)"] }

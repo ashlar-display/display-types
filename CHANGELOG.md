@@ -7,13 +7,95 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **docs.rs marks the items that need a feature** (`alloc`, `std`, `serde`) with the
+  `doc_cfg` badge, enabled only in docs.rs builds.
+
+### Changed
+
+- **The README's Ashlar block links the stack's crate list** instead of naming every crate,
+  so it no longer goes stale on crates.io when a crate is added.
+
 ### Internal
 
+- **The README has Stack position, Out of scope and Documentation sections**, the last
+  linking the architecture, setup, testing and roadmap documents.
+- **`doc/roadmap.md` lists what comes next**, additive and breaking, without version
+  numbers; the changelog stays the record of what shipped.
+- **`doc/architecture.md` describes the crate**: its role between parser, negotiation and
+  the layers below, the two models, the modules, what each build has, and the design rules.
+- **`CONTRIBUTING.md` matches the CI checks** (clippy over all targets, rustdoc with
+  `-D warnings`, every feature set, the bare-metal builds and the MSRV), and its publishing
+  section links the crate list instead of naming two dependents.
+- **`doc/setup.md` lists the checks CI runs**: clippy and the tests in every feature set,
+  rustdoc with every feature, the bare-metal `no_std` builds and the MSRV check.
+- **`doc/testing.md` describes the tests**: what each module's unit tests check, the
+  doctests, the feature sets CI runs them in, and the coverage ratchet.
+- **The MSRV is checked**: an `MSRV` job in CI and in the publish workflow (which waits for
+  it) runs the tests in every feature set and the bare-metal builds on the `rust-version`
+  from `Cargo.toml` (1.85) with `cargo msrv verify`; the crate declared it, and nothing
+  checked it.
+- **The `no_std` builds target a bare-metal target** (`thumbv7em-none-eabi`), in CI and in
+  the publish workflow's `verify` job; on the host, `std` was still there for a dependency
+  that pulls it in, so the builds did not show that the crate needs none.
+- **The tests run in every feature set**: also with `alloc` only and with no default
+  features, in CI and in the publish workflow's `verify` job; those builds were only
+  compiled, which is how the `cea861::oui` example's failure went unnoticed.
+- **rustdoc runs with every feature and `-D warnings`**, as docs.rs builds, in CI and in
+  the publish workflow's `verify` job: `-D missing_docs` alone let broken intra-doc links
+  through, and the `serde` items were not checked.
+- **Clippy lints the tests too, in every feature set**: `--all-targets`, once each with the
+  default features, none, `alloc` only and `serde`, in CI and in the publish workflow's
+  `verify` job; it linted only the library with the default features.
+- **CI fails on `main` when `Cargo.toml` has a `[patch]` section**: `cargo package` drops
+  it, so a release built with one would not build from crates.io.
+- **CI's test job does not keep the checkout's git credentials** (`persist-credentials:
+  false`); it never pushes. The coverage job keeps them to push its ratchet branch.
+- **CI runs with a read-only token by default**: `ci.yml` sets `permissions: contents: read`;
+  the coverage job keeps the write permissions it needs to open its ratchet PR. The test job
+  ran with the repository's default token permissions.
+- **The documentation is built as docs.rs builds it, weekly**: `docs.yml` runs
+  `cargo doc --all-features` with nightly and `--cfg docsrs` (and `-D warnings`), so a
+  nightly change to the `doc_cfg` feature badges shows up before it breaks a docs.rs build.
+- **The README's Rust examples run as doctests** (`ReadmeDoctests` in `lib.rs`, compiled
+  only for `cargo test`), so an example added to it is checked against the API.
+- **The published `.crate` holds only what the crate needs**: `include` in `Cargo.toml`
+  limits it to the sources, `doc/`, the README, changelog and license; it also shipped the
+  CI workflows, Dependabot configuration and coverage baseline.
 - **Constructor tests for the types with many arguments of one type**
   (`PowerSequencing`, `HdrStaticMetadata`, `HdmiForumDsc`, `VesaDisplayDeviceBlock`):
-  each argument lands in its own field, so two swapped arguments fail a test. Rust 1.100
-  counts more lines than 1.99 for the same code, which put line coverage below the
-  baseline (75.71% against 76.14%) without a code change; these tests raise it to 81.54%.
+  each argument lands in its own field, so two swapped arguments fail a test. They raise
+  line coverage to 81.54%. They were added when CI measured 75.71% against the 76.14%
+  baseline after the update to Rust 1.100; that drop came from the coverage cache (below),
+  not from the code, which measures 76.56% on Rust 1.100 from a clean `target/`.
+- **The coverage job's cache is keyed on the Rust version** as well as `Cargo.lock`. After
+  the update to Rust 1.100, CI restored a `target/` built by 1.99; `cargo llvm-cov clean
+  --workspace` leaves the old instrumented binaries there, and the report counted their
+  lines as uncovered.
+- **The publish workflow's `verify` job fails on a `[patch]` section** too, as `ci.yml`
+  does on `main`: the release does not wait for `main`'s CI.
+- **The coverage job runs cargo with `--locked`**, as the other jobs do, so it measures
+  the build the tests ran; `doc/setup.md`'s commands match, and say which feature sets
+  coverage covers (the default and `serde`).
+- **The README has a Rust example**, a VIC lookup that runs as a doctest in every build;
+  the README's doctest hook compiled nothing before. Usage now comes before the feature
+  flags.
+- **`doc/testing.md`'s table lists the constructor tests** in `hdr.rs`, `vesa_dddb.rs`,
+  `panel.rs` and `hdmi_forum.rs`.
+- **`CONTRIBUTING.md` matches the architecture document on `#[non_exhaustive]`** (values
+  complete by definition are not), states the provenance rule for claims about HDMI
+  behaviour, and gives the coverage tolerance as 0.1 percentage points, not 0.1%.
+- **The `cea861::oui` example compiles without `alloc`**: it builds a
+  `VendorSpecificBlock`, which needs `alloc`, so `cargo test --no-default-features`
+  failed on it; it now runs only where that type exists.
+- **The MSRV job shows why it failed**: `cargo msrv verify` runs without
+  `--output-format minimal`, which printed only `true` or `false` and dropped the compiler
+  error.
+- **The docs say when a dependency's breaking release is one of this crate's** (not when
+  the version requirement keeps accepting the old release), give the coverage tolerance as
+  0.1 percentage points everywhere, and `doc/setup.md` installs the cargo-msrv version CI
+  pins (0.19.6).
 
 ## [0.5.1] - 2026-11-02
 

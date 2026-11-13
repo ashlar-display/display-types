@@ -10,15 +10,7 @@
 
 > **Part of [Ashlar](https://ashlar-display.org)** — a display connection stack in Rust,
 > HDMI 2.1 first: from EDID parsing through mode negotiation to FRL link training.
->
-> **display-types** ·
-> [piaf](https://github.com/ashlar-display/piaf) ·
-> [concordance](https://github.com/ashlar-display/concordance) ·
-> [cartouche](https://github.com/ashlar-display/cartouche) ·
-> [culvert](https://github.com/ashlar-display/culvert) ·
-> [plumbob](https://github.com/ashlar-display/plumbob) ·
-> [hdmi-hal](https://github.com/ashlar-display/hdmi-hal) ·
-> [hdmi-hal-i2c-dev](https://github.com/ashlar-display/hdmi-hal-i2c-dev)
+> See [all crates](https://ashlar-display.org/crates.html).
 
 Shared display capability types for display connection negotiation.
 
@@ -29,17 +21,6 @@ engines consume. It is the shared vocabulary between
 [concordance](https://crates.io/crates/concordance) (the negotiation engine),
 and is suitable for any crate that needs to describe display capabilities without
 taking a dependency on a full parser.
-
-## Feature flags
-
-| Flag    | Default | Description                                                               |
-|---------|---------|---------------------------------------------------------------------------|
-| `std`   | yes     | Enables `std`-dependent types; implies `alloc`.                           |
-| `alloc` | no      | Enables heap-allocated types (`Vec`, `Arc`, `String`) without full `std`. |
-| `serde` | no      | Derives `Serialize`/`Deserialize` for all public types.                   |
-
-With neither `std` nor `alloc` the crate compiles in bare `no_std` mode and
-exposes only the scalar types (enums and copy structs).
 
 ## Usage
 
@@ -59,10 +40,69 @@ For bare `no_std` (scalars only):
 cargo add display-types --no-default-features
 ```
 
-## Contributing
+Look up a CTA-861 Video Identification Code; this works in every build, `no_std` without
+`alloc` included:
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and [doc/setup.md](doc/setup.md)
-for build and test instructions.
+```rust
+use display_types::RefreshRate;
+use display_types::cea861::vic_to_mode;
+
+let mode = vic_to_mode(16).expect("VIC 16 is 1920×1080p60");
+assert_eq!((mode.width, mode.height), (1920, 1080));
+assert_eq!(mode.refresh_rate, Some(RefreshRate::integral(60)));
+assert!(!mode.interlaced);
+```
+
+## Feature flags
+
+| Flag    | Default | Description                                                               |
+|---------|---------|---------------------------------------------------------------------------|
+| `std`   | yes     | Enables `std`-dependent types; implies `alloc`.                           |
+| `alloc` | no      | Enables heap-allocated types (`Vec`, `Arc`, `String`) without full `std`. |
+| `serde` | no      | Derives `Serialize`/`Deserialize` for all public types.                   |
+
+With neither `std` nor `alloc` the crate compiles in bare `no_std` mode and
+exposes only the scalar types (enums and copy structs).
+
+## Stack position
+
+```mermaid
+flowchart LR
+    parser["piaf (parser)"]
+    dt["display-types"]
+    negotiation["concordance (negotiation)"]
+    below["InfoFrames · SCDC · link training · hardware traits"]
+
+    parser -->|"produces DisplayCapabilities"| dt
+    dt -->|"DisplayCapabilities"| negotiation
+    negotiation -->|"produces ResolvedDisplayConfig"| dt
+    dt -->|"modes, color, FRL rates"| below
+```
+
+display-types depends on no other Ashlar crate; every other
+[Ashlar crate](https://ashlar-display.org/crates.html) depends on it. The capability model
+lives here rather than in the parser, so negotiation does not depend on the parser; the
+resolved configuration lives here rather than in the negotiation engine, so drivers and
+InfoFrame encoders do not depend on negotiation.
+
+## Out of scope
+
+- **Parsing EDID and DisplayID** — piaf decodes the bytes into these types.
+- **Choosing a configuration** — ranking modes and checking them against source and cable
+  limits is concordance's.
+- **Correcting display data** — the types hold what the display declares; quirk fixes and
+  resolving contradictions belong to the parser or the negotiation engine.
+- **Encoding for the wire** — InfoFrames, SCDC registers and PHY settings are built from
+  these types in their own crates.
+
+## Documentation
+
+- [`doc/architecture.md`](doc/architecture.md) — role, the two models, modules, builds and
+  design rules
+- [`doc/setup.md`](doc/setup.md) — build, test, `no_std`, MSRV and coverage commands
+- [`doc/testing.md`](doc/testing.md) — what the tests check and how CI runs them
+- [`doc/roadmap.md`](doc/roadmap.md) — what comes next
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — how to contribute
 
 ## Verifying releases
 

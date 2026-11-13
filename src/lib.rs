@@ -12,6 +12,7 @@
 //! With neither `std` nor `alloc` the crate compiles in bare `no_std` mode, exposing
 //! only the scalar types (enums and copy structs).
 #![no_std]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
 
@@ -98,3 +99,8 @@ pub use transfer::{DisplayIdTransferCharacteristic, TransferCurve};
 /// Resolved display configuration type, for use by drivers and InfoFrame encoders.
 pub mod resolved;
 pub use resolved::ResolvedDisplayConfig;
+
+// Compiles and runs the README's examples as doctests.
+#[cfg(doctest)]
+#[doc = include_str!("../README.md")]
+struct ReadmeDoctests;
