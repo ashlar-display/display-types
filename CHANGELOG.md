@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Internal
+
+- **Constructor tests for the types with many arguments of one type**
+  (`PowerSequencing`, `HdrStaticMetadata`, `HdmiForumDsc`, `VesaDisplayDeviceBlock`):
+  each argument lands in its own field, so two swapped arguments fail a test. Rust 1.100
+  counts more lines than 1.99 for the same code, which put line coverage below the
+  baseline (75.71% against 76.14%) without a code change; these tests raise it to 81.54%.
+
 ## [0.5.1] - 2026-11-02
 
 ### Added

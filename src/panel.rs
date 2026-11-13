@@ -656,3 +656,19 @@ impl PowerSequencing {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn power_sequencing_new_keeps_each_delay_in_its_field() {
+        let p = PowerSequencing::new(1, 2, 3, 4, 5, 6);
+        assert_eq!(p.t1_power_to_signal, 1);
+        assert_eq!(p.t2_signal_to_backlight, 2);
+        assert_eq!(p.t3_backlight_to_signal_off, 3);
+        assert_eq!(p.t4_signal_to_power_off, 4);
+        assert_eq!(p.t5_power_off_min, 5);
+        assert_eq!(p.t6_backlight_off_min, 6);
+    }
+}
