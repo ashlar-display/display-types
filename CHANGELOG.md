@@ -17,12 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The README's Ashlar block links the stack's crate list** instead of naming every crate,
   so it no longer goes stale on crates.io when a crate is added.
 
-### Fixed
-
-- **The `cea861::oui` example compiles without `alloc`**: it builds a
-  `VendorSpecificBlock`, which needs `alloc`, so `cargo test --no-default-features`
-  failed on it; it now runs only where that type exists.
-
 ### Internal
 
 - **The README has Stack position, Out of scope and Documentation sections**, the last
@@ -92,6 +86,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`CONTRIBUTING.md` matches the architecture document on `#[non_exhaustive]`** (values
   complete by definition are not), states the provenance rule for claims about HDMI
   behaviour, and gives the coverage tolerance as 0.1 percentage points, not 0.1%.
+- **The `cea861::oui` example compiles without `alloc`**: it builds a
+  `VendorSpecificBlock`, which needs `alloc`, so `cargo test --no-default-features`
+  failed on it; it now runs only where that type exists.
 
 ## [0.5.1] - 2026-11-02
 
