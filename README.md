@@ -22,17 +22,6 @@ engines consume. It is the shared vocabulary between
 and is suitable for any crate that needs to describe display capabilities without
 taking a dependency on a full parser.
 
-## Feature flags
-
-| Flag    | Default | Description                                                               |
-|---------|---------|---------------------------------------------------------------------------|
-| `std`   | yes     | Enables `std`-dependent types; implies `alloc`.                           |
-| `alloc` | no      | Enables heap-allocated types (`Vec`, `Arc`, `String`) without full `std`. |
-| `serde` | no      | Derives `Serialize`/`Deserialize` for all public types.                   |
-
-With neither `std` nor `alloc` the crate compiles in bare `no_std` mode and
-exposes only the scalar types (enums and copy structs).
-
 ## Usage
 
 ```sh
@@ -50,6 +39,30 @@ For bare `no_std` (scalars only):
 ```sh
 cargo add display-types --no-default-features
 ```
+
+Look up a CTA-861 Video Identification Code; this works in every build, `no_std` without
+`alloc` included:
+
+```rust
+use display_types::RefreshRate;
+use display_types::cea861::vic_to_mode;
+
+let mode = vic_to_mode(16).expect("VIC 16 is 1920×1080p60");
+assert_eq!((mode.width, mode.height), (1920, 1080));
+assert_eq!(mode.refresh_rate, Some(RefreshRate::integral(60)));
+assert!(!mode.interlaced);
+```
+
+## Feature flags
+
+| Flag    | Default | Description                                                               |
+|---------|---------|---------------------------------------------------------------------------|
+| `std`   | yes     | Enables `std`-dependent types; implies `alloc`.                           |
+| `alloc` | no      | Enables heap-allocated types (`Vec`, `Arc`, `String`) without full `std`. |
+| `serde` | no      | Derives `Serialize`/`Deserialize` for all public types.                   |
+
+With neither `std` nor `alloc` the crate compiles in bare `no_std` mode and
+exposes only the scalar types (enums and copy structs).
 
 ## Stack position
 

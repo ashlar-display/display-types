@@ -84,6 +84,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The coverage job runs cargo with `--locked`**, as the other jobs do, so it measures
   the build the tests ran; `doc/setup.md`'s commands match, and say which feature sets
   coverage covers (the default and `serde`).
+- **The README has a Rust example**, a VIC lookup that runs as a doctest in every build;
+  the README's doctest hook compiled nothing before. Usage now comes before the feature
+  flags.
 
 ## [0.5.1] - 2026-11-02
 
