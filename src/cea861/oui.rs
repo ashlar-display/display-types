@@ -6,11 +6,13 @@
 //! Use these constants to identify vendor-specific blocks by OUI:
 //!
 //! ```rust
+//! # #[cfg(feature = "alloc")] {
 //! # use display_types::cea861::{VendorSpecificBlock, oui};
 //! # let block = VendorSpecificBlock::new(oui::DOLBY_VISION, vec![]);
 //! if block.oui == oui::DOLBY_VISION {
 //!     // parse Dolby Vision metadata from block.payload
 //! }
+//! # }
 //! ```
 
 /// HDMI Licensing, LLC — used in HDMI 1.x Vendor-Specific Data Blocks.

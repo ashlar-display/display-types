@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The README's Ashlar block links the stack's crate list** instead of naming every crate,
   so it no longer goes stale on crates.io when a crate is added.
 
+### Fixed
+
+- **The `cea861::oui` example compiles without `alloc`**: it builds a
+  `VendorSpecificBlock`, which needs `alloc`, so `cargo test --no-default-features`
+  failed on it; it now runs only where that type exists.
+
 ### Internal
 
 - **The documentation is built as docs.rs builds it, weekly**: `docs.yml` runs
