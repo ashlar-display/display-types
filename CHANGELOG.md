@@ -87,6 +87,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The README has a Rust example**, a VIC lookup that runs as a doctest in every build;
   the README's doctest hook compiled nothing before. Usage now comes before the feature
   flags.
+- **`doc/testing.md`'s table lists the constructor tests** in `hdr.rs`, `vesa_dddb.rs`,
+  `panel.rs` and `hdmi_forum.rs`.
 
 ## [0.5.1] - 2026-11-02
 

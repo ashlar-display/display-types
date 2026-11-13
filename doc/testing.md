@@ -16,12 +16,15 @@ file:
 | `src/timing.rs` | Pixel clock estimation (exact clocks returned unchanged, saturation on oversized geometry) and the CVT reduced-blanking formulas, v1 and v2, against known modes and degenerate input |
 | `src/cea861/vic_table.rs` | Lookups of individual VICs (including interlaced and aliased entries), the codes that have no mode, and that every entry carries its horizontal blanking from CTA-861 |
 | `src/cea861/dmt_table.rs` | Lookups by DMT ID, the fractional NTSC rate, every entry's horizontal blanking, and the rows corrected against VESA DMT |
-| `src/cea861/hdmi_forum.rs` | Lane count and order for every FRL rate |
+| `src/cea861/hdmi_forum.rs` | Lane count and order for every FRL rate; `HdmiForumDsc::new` keeps each flag in its field |
+| `src/cea861/hdr.rs` | `HdrStaticMetadata::new` keeps each luminance value in its field |
+| `src/cea861/vesa_dddb.rs` | `VesaDisplayDeviceBlock::new` keeps each number and each flag in its field |
 | `src/color.rs` | Color capability derivation: bit depths per color format from the base block, the HDMI VSDB deep-color flags and the HF-SCDB |
 | `src/displayid/mod.rs` | DisplayID field decoding: chromaticity normalisation, display technology and scan orientation codes (including reserved and unknown values), color depth bit layouts |
 | `src/capabilities.rs` | `RefreshRate` arithmetic (reduction, canonical equality, ordering), extension data storage, the preferred timing, and the serde round trips |
 | `src/manufacture.rs` | `ManufacturerId` invariants, `MonitorString` trimming, and their serde wire format |
 | `src/screen.rs`, `src/resolved.rs` | Aspect ratio formulas; `ResolvedDisplayConfig` construction |
+| `src/panel.rs` | `PowerSequencing::new` keeps each delay in its field |
 
 ### Doctests
 
