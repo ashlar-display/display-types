@@ -81,6 +81,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   lines as uncovered.
 - **The publish workflow's `verify` job fails on a `[patch]` section** too, as `ci.yml`
   does on `main`: the release does not wait for `main`'s CI.
+- **The coverage job runs cargo with `--locked`**, as the other jobs do, so it measures
+  the build the tests ran; `doc/setup.md`'s commands match, and say which feature sets
+  coverage covers (the default and `serde`).
 
 ## [0.5.1] - 2026-11-02
 
